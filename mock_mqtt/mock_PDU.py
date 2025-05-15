@@ -26,7 +26,5 @@ def publish_pdu_data():
         time.sleep(interval)
 
 
-# Main entry point
 if __name__ == "__main__":
-    # Start publishing data
     publish_pdu_data()

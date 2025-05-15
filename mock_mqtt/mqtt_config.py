@@ -1,10 +1,10 @@
 import json
-import time
-import random
+
 import paho.mqtt.client as mqtt
+import random
 
 # MQTT Configuration
-BROKER_URL = "mqtt://test.mosquitto.org"
+BROKER_URL = "10.128.48.5"
 CLIENT_ID = f"client_{hex(random.getrandbits(64))[2:]}"
 TOPICS = [
     "midspan/data",
@@ -29,10 +29,11 @@ def on_message(client, userdata, msg):
     except json.JSONDecodeError:
         print(f"Invalid JSON received on {msg.topic}: {msg.payload.decode()}")
 
+# Create MQTT client
 client = mqtt.Client(client_id=CLIENT_ID)
 client.on_connect = on_connect
 client.on_message = on_message
-client.connect("test.mosquitto.org", 1883, 60)
+client.connect(BROKER_URL, 1883, 60)
 
-if __name__ == "__main__":
-    client.loop_forever()
+# Export client for use in other scripts
+__all__ = ["client"]

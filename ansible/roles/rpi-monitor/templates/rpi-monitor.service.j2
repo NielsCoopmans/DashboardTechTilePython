@@ -1,0 +1,15 @@
+[Unit]
+Description=Raspberry Pi MQTT Monitor
+After=network.target
+
+[Service]
+ExecStart=/home/pi/venv/bin/python /home/pi/rpi_monitor.py
+WorkingDirectory=/home/pi
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+Environment="PATH=/home/pi/venv/bin"
+
+[Install]
+WantedBy=multi-user.target

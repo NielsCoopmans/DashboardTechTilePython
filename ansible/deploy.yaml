@@ -1,0 +1,7 @@
+- name: Deploy Python monitor to RPIs
+  hosts: rpis
+  become: true
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  roles:
+    - rpi_monitor
