@@ -10,7 +10,7 @@ TOPICS = [
     "midspan/data",
     "pdu/data",
     "rpi/data",
-    "timeprovider/data"
+    "timeprovider/data",
 ]
 
 def on_connect(client, userdata, flags, rc):
@@ -22,17 +22,9 @@ def on_connect(client, userdata, flags, rc):
     else:
         print(f"Failed to connect, return code {rc}")
 
-def on_message(client, userdata, msg):
-    try:
-        data = json.loads(msg.payload.decode())
-        print(f"Received message on {msg.topic}: {data}")
-    except json.JSONDecodeError:
-        print(f"Invalid JSON received on {msg.topic}: {msg.payload.decode()}")
-
 # Create MQTT client
 client = mqtt.Client(client_id=CLIENT_ID)
 client.on_connect = on_connect
-client.on_message = on_message
 client.connect(BROKER_URL, 1883, 60)
 
 # Export client for use in other scripts

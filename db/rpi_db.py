@@ -1,53 +1,51 @@
 import json
 import time
 import sqlite3
-
-from mqtt_config import client  # import the MQTT client from your mqtt_config.py
+from mqtt_config import client, TOPICS
 
 # === Database Setup ===
 conn = sqlite3.connect("rpi_data.db")
 cursor = conn.cursor()
-cursor.execute("""
-    CREATE TABLE IF NOT EXISTS rpi_data (
-        id TEXT,
-        cpu_load TEXT,
-        ram TEXT,
-        disk_usage TEXT,
-        cpu_temp TEXT,
-        ip TEXT,
-        timestamp INTEGER
-    )
-""")
-conn.commit()
 
-# === Data Insertion ===
-def store_data(data):
-    cursor.execute("INSERT INTO rpi_data VALUES (?, ?, ?, ?, ?, ?, ?)", (
-        data.get("id", "unknown"),
-        data.get("cpuLoad", "0%"),
-        data.get("ram", "0GB"),
-        data.get("diskUsage", "0GB"),
-        data.get("cpuTemp", "0.0"),
-        data.get("ip", "0.0.0.0"),
-        int(time.time())
-    ))
+# Create a table for each topic based on its name
+def sanitize_topic_name(topic):
+    return topic.replace("/", "_")  # e.g., rpi/data → rpi_data
+
+def create_table_if_not_exists(table_name, sample_data):
+    columns = [f"{key} TEXT" for key in sample_data.keys()]
+    columns.append("timestamp INTEGER")
+    sql = f"CREATE TABLE IF NOT EXISTS {table_name} ({', '.join(columns)})"
+    cursor.execute(sql)
     conn.commit()
 
-# === Override the on_message callback to add DB storage for rpi/data ===
+# === Dynamic Data Insertion ===
+def store_data(topic, data):
+    table = sanitize_topic_name(topic)
+    create_table_if_not_exists(table, data)
+
+    keys = list(data.keys())
+    placeholders = ", ".join(["?"] * (len(keys) + 1))  # +1 for timestamp
+    columns = ", ".join(keys + ["timestamp"])
+    values = [data.get(k, "") for k in keys] + [int(time.time())]
+
+    sql = f"INSERT INTO {table} ({columns}) VALUES ({placeholders})"
+    cursor.execute(sql, values)
+    conn.commit()
+
+# === MQTT Message Handler ===
 def on_message(client, userdata, msg):
     try:
         data = json.loads(msg.payload.decode())
         print(f"Received message on {msg.topic}: {data}")
-
-        if msg.topic == "rpi/data":
-            store_data(data)
-
+        store_data(msg.topic, data)
     except json.JSONDecodeError:
-        print(f"Invalid JSON received on {msg.topic}: {msg.payload.decode()}")
+        print(f"Invalid JSON on {msg.topic}: {msg.payload.decode()}")
     except Exception as e:
-        print(f"Error processing message on {msg.topic}: {e}")
+        print(f"Error on {msg.topic}: {e}")
 
+# Set message handler
 client.on_message = on_message
 
+# === Run MQTT Client ===
 if __name__ == "__main__":
     client.loop_forever()

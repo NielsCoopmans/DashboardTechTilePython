@@ -1,54 +1,57 @@
 import json
 import time
-import random
-from mqtt_config import client  # Ensure this is the same config used in your main script
+import uuid
+from mqtt_config import client
 
 def on_message(client, userdata, message):
-    """Callback function to handle received MQTT messages."""
+    """Handle incoming ACK messages."""
     try:
         payload = json.loads(message.payload.decode("utf-8"))
-        print(f"Received from {message.topic}: {payload}")
+        topic_parts = message.topic.split("/")
+        if topic_parts[0] == "rpi" and topic_parts[1] == "control" and topic_parts[2] == "ack":
+            print(f"[ACK] Received from {message.topic}: {payload}")
+
+            # Send confirmation
+            confirm_topic = f"rpi/control/confirm/{payload['device_id']}"
+            confirm_payload = {
+                "request_id": payload["request_id"]
+            }
+            client.publish(confirm_topic, json.dumps(confirm_payload))
+            print(f"[CONFIRM] Sent confirmation for {payload['request_id']} to {confirm_topic}")
     except json.JSONDecodeError:
         print(f"Invalid JSON from {message.topic}: {message.payload}")
 
 def send_command(device_id, command):
-    """Send a control command to a specific RPi."""
-    topic = f"rpi/control/{device_id}/{command}"
-    client.publish(topic, "")
-    print(f"Sent '{command}' command to {device_id}")
+    """Send a command request with a unique request_id."""
+    topic = f"rpi/control/{device_id}"
+    request_id = str(uuid.uuid4())
+    payload = {
+        "request_id": request_id,
+        "command": command
+    }
+    client.publish(topic, json.dumps(payload))
+    print(f"[SEND] Sent '{command}' to {device_id} with request ID {request_id}")
 
 def main():
-    # Select a random test device ID
-    test_device_id = "A05"
+    test_device_id = ("T08")
 
-    # Attach message listener
     client.on_message = on_message
-
-    # Subscribe to device data
-    #client.subscribe("rpi/data/#")  # Listen to all RPi status updates
-    #print(f"Listening for updates from all devices...")
-
-    # Start MQTT loop
-    #client.loop_start()
+    client.subscribe(f"rpi/control/ack/{test_device_id}")
+    client.loop_start()
 
     try:
-        time.sleep(2)  # Allow time for connection
+        time.sleep(2)
 
-        # Test shutdown command
         print(f"Testing shutdown on {test_device_id}...")
         send_command(test_device_id, "shutdown")
+        time.sleep(10)
 
-        time.sleep(5)  # Allow time for response
-
-        # Test reboot command
         print(f"Testing reboot on {test_device_id}...")
         send_command(test_device_id, "reboot")
-
-        time.sleep(5)  # Allow time for response
+        time.sleep(10)
 
     except KeyboardInterrupt:
         print("\nTest interrupted by user.")
-
     finally:
         client.loop_stop()
         client.disconnect()
