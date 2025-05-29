@@ -4,7 +4,7 @@ import random
 from mqtt_config import client
 
 
-def publish_pdu_data():
+def run():
     interval = 10  # 10 seconden
     while True:
         pdu_number = random.randint(1, 2)
@@ -15,7 +15,7 @@ def publish_pdu_data():
         pdu_port_data = {
             "id": pdu_id,
             "port": port,
-            "status": "Enabled" if random.random() > 0.2 else "Disabled",
+            "status": "active" if random.random() > 0.2 else "inactive",
             "current": f"{random.uniform(0, 10):.2f}A",
             "voltage": "230V",
             "power": f"{random.uniform(0, 200):.2f}W"
@@ -27,7 +27,8 @@ def publish_pdu_data():
             "systemCurrent": f"{random.uniform(0, 40):.2f}A",
             "systemVoltage": "230V",
             "systemPower": f"{random.uniform(200, 1000):.2f}W",
-            "frequency": "50Hz"
+            "frequency": "50Hz",
+            "status": "active" if random.random() > 0.2 else "inactive",
         }
 
         # Publiceer aparte topics
@@ -41,4 +42,4 @@ def publish_pdu_data():
 
 
 if __name__ == "__main__":
-    publish_pdu_data()
+    run()

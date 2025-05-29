@@ -14,7 +14,7 @@ Publishes the current status of a server, including CPU, RAM, disk usage, and IP
 
 ```json
 {
-  "status": "Working",
+  "status": "active",
   "ip": "192.168.1.54",
   "cpuLoad": "67",
   "ram": "45",
@@ -26,7 +26,7 @@ Publishes the current status of a server, including CPU, RAM, disk usage, and IP
 
 ### Fields:
 
-* `status`: `"Working"` or `"Unknown"`
+* `status`: `"active"` or `"inactive"`
 * `ip`: IPv4 address
 * `cpuLoad`: CPU usage percentage
 * `ram`: RAM usage percentage
@@ -48,7 +48,7 @@ Publishes the power status for each individual PoE port on a midspan device.
 {
   "id": "midspan-001",
   "port": 3,
-  "status": "Enabled",
+  "status": "active",
   "power": "12.30W",
   "maxPower": "60.00W",
   "class": 4
@@ -59,7 +59,7 @@ Publishes the power status for each individual PoE port on a midspan device.
 
 * `id`: Unique midspan ID (e.g., `midspan-001`)
 * `port`: Port number (1–24 or 1–12)
-* `status`: `"Enabled"` or `"Disabled"`
+* `status`: `"active"` or `"inactive"`
 * `power`: Current power draw in watts
 * `maxPower`: Maximum supported power draw
 * `class`: PoE class (0–8)
@@ -81,7 +81,7 @@ Publishes overall metrics of each midspan device.
   "maxAvailablePowerBudget": "500W",
   "systemVoltage": "48V",
   "temperature": "35.60°C",
-  "status": "Operational"
+  "status": "active"
 }
 ```
 
@@ -92,7 +92,7 @@ Publishes overall metrics of each midspan device.
 * `maxAvailablePowerBudget`: Device's power budget
 * `systemVoltage`: System voltage
 * `temperature`: Device temperature
-* `status`: `"Operational"` or `"Fault"`
+* `status`: `"active"` or `"inactive"`
 
 ---
 
@@ -108,7 +108,7 @@ Publishes the power metrics per PDU port.
 {
   "id": "pdu-001",
   "port": 8,
-  "status": "Enabled",
+  "status": "active",
   "current": "3.15A",
   "voltage": "230V",
   "power": "140.25W"
@@ -119,7 +119,7 @@ Publishes the power metrics per PDU port.
 
 * `id`: PDU ID (e.g., `pdu-001`)
 * `port`: Port number
-* `status`: Enabled/Disabled
+* `status`: active/inactive
 * `current`: Current draw in amps
 * `voltage`: Line voltage
 * `power`: Current power draw
@@ -140,7 +140,8 @@ Publishes total metrics per PDU device.
   "systemCurrent": "23.42A",
   "systemVoltage": "230V",
   "systemPower": "560.30W",
-  "frequency": "50Hz"
+  "frequency": "50Hz",
+  "status": "active"
 }
 ```
 
@@ -151,6 +152,7 @@ Publishes total metrics per PDU device.
 * `systemVoltage`: System voltage
 * `systemPower`: Total power usage
 * `frequency`: AC frequency (e.g., 50Hz)
+* `status`: active/inactive
 
 ---
 

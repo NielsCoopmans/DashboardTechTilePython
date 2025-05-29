@@ -15,7 +15,7 @@ def generate_poepoort_data(midspan_id, port):
     return {
         "id": midspan_id,
         "port": port,
-        "status": "Enabled" if random.random() > 0.3 else "Disabled",
+        "status": "active" if random.random() > 0.3 else "inactive",
         "power": f"{random.uniform(0, 30):.2f}W",
         "maxPower": f"{random.uniform(30, 60):.2f}W",
         "class": random.randint(0, 8)
@@ -29,11 +29,11 @@ def generate_midspan_data(midspan_id):
         "maxAvailablePowerBudget": "500W",
         "systemVoltage": "48V",
         "temperature": f"{random.uniform(20, 40):.2f}°C",
-        "status": "Operational" if random.random() > 0.1 else "Fault"
+        "status": "active" if random.random() > 0.1 else "inactive",
     }
 
 
-def publish_midspan_data():
+def run():
     midspans = load_midspan_config()
     interval = 10  # seconden tussen updates
 
@@ -56,4 +56,4 @@ def publish_midspan_data():
 
 
 if __name__ == "__main__":
-    publish_midspan_data()
+    run()

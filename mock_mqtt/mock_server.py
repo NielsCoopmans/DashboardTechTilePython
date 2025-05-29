@@ -19,7 +19,7 @@ def publish_server_data():
     interval = 10  # seconds
     while True:
         data = {
-            "status": "Unknown",
+            "status": "inactive",
             "ip": "0.0.0.0",
             "cpuLoad": "0",
             "ram": "0",
@@ -29,8 +29,8 @@ def publish_server_data():
         }
 
         # Simulate realistic values:
-        if random.random() > 0.3:  # 70% chance the server is 'Working'
-            data["status"] = "Working"
+        if random.random() > 0.1:  # 70% chance the server is 'Working'
+            data["status"] = "active"
             data["ip"] = generate_ip()
             data["cpuLoad"] = get_random_percent()
             data["ram"] = get_random_percent()

@@ -12,7 +12,7 @@ def publish_time_provider_data():
 
         data = {
             "id": time_provider_id,
-            "status": "Online",
+            "status": "active",
             "lastSync": datetime.utcnow().isoformat(),
         }
 

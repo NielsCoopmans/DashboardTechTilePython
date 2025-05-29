@@ -42,9 +42,6 @@ def main():
     try:
         time.sleep(2)
 
-        print(f"Testing shutdown on {test_device_id}...")
-        send_command(test_device_id, "shutdown")
-        time.sleep(10)
 
         print(f"Testing reboot on {test_device_id}...")
         send_command(test_device_id, "reboot")
