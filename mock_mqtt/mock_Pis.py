@@ -51,7 +51,7 @@ def publish_rpi_data():
             client.publish("rpi/data", json.dumps(data))
             print("Published RPi Data:", data)
 
-        time.sleep(50)
+        time.sleep(10)
 
 def on_message(client, userdata, message):
     topic_parts = message.topic.split("/")
